@@ -19,6 +19,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
 
+    @Override
     public CategoryResDTO.CreateDTO createCategory(CategoryReqDTO.CreateDTO request, Long memberId) {
 
         // TODO: Member 에러 코드로 바꾸기
