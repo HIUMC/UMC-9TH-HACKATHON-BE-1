@@ -6,6 +6,7 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.service.command.C
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.service.query.CategoryQueryService;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.global.apiPayload.ApiResponse;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.global.apiPayload.code.GeneralSuccessCode;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ public class CategoryController {
     @PostMapping
     public ApiResponse<CategoryResDTO.CreateDTO> createCategory(
             @Valid @RequestBody CategoryReqDTO.CreateDTO dto,
-            @SessionAttribute(name = "MEMBER_ID") Long memberId
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId
     ) {
         return ApiResponse.onSuccess(GeneralSuccessCode.CREATED, categoryCommandService.createCategory(dto, memberId));
     }
@@ -33,7 +34,7 @@ public class CategoryController {
     @DeleteMapping("/{categoryId}")
     public ApiResponse<Void> deleteCategory(
             @PathVariable Long categoryId,
-            @SessionAttribute(name = "MEMBER_ID") Long memberId
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId
     ) {
         categoryCommandService.deleteCategory(categoryId, memberId);
         return ApiResponse.onSuccess(GeneralSuccessCode.OK, null);
@@ -41,7 +42,7 @@ public class CategoryController {
 
     @GetMapping
     public ApiResponse<List<CategoryResDTO.CategoryDTO>> getCategoryList(
-            @SessionAttribute(name = "MEMBER_ID") Long memberId
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId
     ) {
         return ApiResponse.onSuccess(GeneralSuccessCode.OK, categoryQueryService.findAllCategories(memberId));
     }
