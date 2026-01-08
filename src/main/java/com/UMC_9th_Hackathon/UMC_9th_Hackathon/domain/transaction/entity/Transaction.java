@@ -7,7 +7,7 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Builder
@@ -32,7 +32,7 @@ public class Transaction extends BaseEntity {
     private String memo;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
 
     @Column(name = "photo_url")
     private String photoUrl;
