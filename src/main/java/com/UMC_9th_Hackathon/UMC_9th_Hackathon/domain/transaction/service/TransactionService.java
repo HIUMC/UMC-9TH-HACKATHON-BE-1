@@ -1,10 +1,12 @@
 package com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.service;
 
+import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.entity.Category;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.repository.CategoryRepository;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.entity.Member;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.exception.MemberErrorCode;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.exception.MemberException;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.repository.MemberRepository;
+import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.StatisticsResDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.TransactionReqDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.TransactionResDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.entity.Transaction;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -141,5 +144,66 @@ public class TransactionService {
                 .month(month)
                 .dailyData(dailyData)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public StatisticsResDTO.MonthlyStats getMonthlyStatistics(Long memberId, String monthStr) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 날짜 범위 계산
+        YearMonth yearMonth = YearMonth.parse(monthStr);
+        LocalDate start = yearMonth.atDay(1);
+        LocalDate end = yearMonth.atEndOfMonth();
+
+
+        List<Transaction> transactions = transactionRepository.findAllByMemberAndDateRange(member, start, end);
+
+
+        Map<Category, Long> incomeMap = transactions.stream()
+                .filter(t -> t.getType() == TransactionType.INCOME)
+                .collect(Collectors.groupingBy(Transaction::getCategory, Collectors.summingLong(Transaction::getPrice)));
+
+        long totalIncome = incomeMap.values().stream().mapToLong(Long::longValue).sum();
+
+        List<StatisticsResDTO.CategoryAmount> incomeByCategory = incomeMap.entrySet().stream()
+                .map(e -> new StatisticsResDTO.CategoryAmount(e.getKey().getId(), e.getKey().getName(), e.getValue()))
+                .toList();
+
+
+        Map<Category, Long> expenseMap = transactions.stream()
+                .filter(t -> t.getType() == TransactionType.EXPENSE)
+                .collect(Collectors.groupingBy(Transaction::getCategory, Collectors.summingLong(Transaction::getPrice)));
+
+        long totalExpense = expenseMap.values().stream().mapToLong(Long::longValue).sum();
+
+        List<StatisticsResDTO.CategoryRatio> expenseByCategory = expenseMap.entrySet().stream()
+                .map(e -> {
+                    double ratio = totalExpense == 0 ? 0 : (double) e.getValue() / totalExpense * 100;
+                    return new StatisticsResDTO.CategoryRatio(
+                            e.getKey().getId(),
+                            e.getKey().getName(),
+                            e.getValue(),
+                            Math.round(ratio * 10.0) / 10.0 // 소수점 첫째자리까지
+                    );
+                }).toList();
+
+
+        StatisticsResDTO.CategoryAmount maxCategory = expenseMap.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(e -> new StatisticsResDTO.CategoryAmount(e.getKey().getId(), e.getKey().getName(), e.getValue()))
+                .orElse(null);
+
+
+        long remainingBudget = totalIncome - totalExpense;
+        String remainingStatus = remainingBudget > 0 ? "POSITIVE" : (remainingBudget < 0 ? "NEGATIVE" : "ZERO");
+
+        return new StatisticsResDTO.MonthlyStats(
+                monthStr,
+                new StatisticsResDTO.IncomeStats(totalIncome, incomeByCategory),
+                new StatisticsResDTO.ExpenseStats(totalExpense, expenseByCategory, maxCategory),
+                remainingBudget,
+                remainingStatus
+        );
     }
 }
