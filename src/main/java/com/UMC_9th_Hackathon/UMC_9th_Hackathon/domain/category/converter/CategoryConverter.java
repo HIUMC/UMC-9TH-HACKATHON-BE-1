@@ -5,6 +5,8 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.dto.res.CategoryR
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.entity.Category;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.entity.Member;
 
+import java.util.List;
+
 public class CategoryConverter {
 
     public static Category toCategory(CategoryReqDTO.CreateDTO request, Member member) {
@@ -21,6 +23,20 @@ public class CategoryConverter {
                 .name(category.getName())
                 .imgUrl(category.getImgUrl())
                 .createdAt(category.getCreatedAt())
+                .build();
+    }
+
+    public static List<CategoryResDTO.CategoryDTO> toCategoryListDTO(List<Category> categories) {
+        return categories.stream()
+                .map(CategoryConverter::toCategoryDTO)
+                .toList();
+    }
+
+    public static CategoryResDTO.CategoryDTO toCategoryDTO(Category category) {
+        return CategoryResDTO.CategoryDTO.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .imgUrl(category.getImgUrl())
                 .build();
     }
 }
