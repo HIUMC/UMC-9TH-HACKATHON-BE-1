@@ -8,6 +8,8 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.exception.Categor
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.exception.code.CategoryErrorCode;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.repository.CategoryRepository;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.entity.Member;
+import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.exception.MemberErrorCode;
+import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.exception.MemberException;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,10 +26,8 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     @Transactional
     public CategoryResDTO.CreateDTO createCategory(CategoryReqDTO.CreateDTO request, Long memberId) {
 
-        // TODO: Member 에러 코드로 바꾸기
         Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
-                .orElseThrow(() -> new CategoryException(CategoryErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
         if(categoryRepository.existsByMemberAndName(member, request.name())) {
             throw new CategoryException(CategoryErrorCode.ALREADY_EXISTS);
@@ -41,10 +41,9 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     @Override
     @Transactional
     public void deleteCategory(Long categoryId, Long memberId) {
-        // TODO: Member 에러 코드로 바꾸기
+
         Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
-                .orElseThrow(() -> new CategoryException(CategoryErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
         Category category = categoryRepository.findByIdAndMember(categoryId, member)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.NOT_FOUND));
