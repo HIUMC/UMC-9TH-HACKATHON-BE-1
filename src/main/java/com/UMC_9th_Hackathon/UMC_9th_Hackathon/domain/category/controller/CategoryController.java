@@ -18,20 +18,18 @@ public class CategoryController {
 
     private final CategoryCommandService categoryCommandService;
 
-    // TODO: 세션에서 ID 추출
-    @PostMapping("/{memberId}")
+    @PostMapping
     public ApiResponse<CategoryResDTO.CreateDTO> createCategory(
             @Valid @RequestBody CategoryReqDTO.CreateDTO dto,
-            @PathVariable Long memberId
+            @SessionAttribute(name = "MEMBER_ID") Long memberId
     ) {
         return ApiResponse.onSuccess(GeneralSuccessCode.CREATED, categoryCommandService.createCategory(dto, memberId));
     }
 
-    // TODO: 세션에서 ID 추출
-    @DeleteMapping("/{categoryId}/{memberId}")
+    @DeleteMapping("/{categoryId}")
     public ApiResponse<Void> deleteCategory(
             @PathVariable Long categoryId,
-            @PathVariable Long memberId
+            @SessionAttribute(name = "MEMBER_ID") Long memberId
     ) {
         categoryCommandService.deleteCategory(categoryId, memberId);
         return ApiResponse.onSuccess(GeneralSuccessCode.OK, null);
