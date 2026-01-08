@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum CategoryErrorCode implements BaseErrorCode {
-    ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "CATEGORY400_1", "이미 존재하는 카테고리입니다."),
+    ALREADY_EXISTS(HttpStatus.CONFLICT, "CATEGORY409_1", "이미 존재하는 카테고리입니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY404_1", "카테고리가 존재하지 않습니다."),
     ;
 

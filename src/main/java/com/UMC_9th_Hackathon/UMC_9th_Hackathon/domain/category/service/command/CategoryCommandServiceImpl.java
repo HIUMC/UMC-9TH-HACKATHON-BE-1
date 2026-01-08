@@ -11,6 +11,7 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.entity.Member;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional
     public CategoryResDTO.CreateDTO createCategory(CategoryReqDTO.CreateDTO request, Long memberId) {
 
         // TODO: Member 에러 코드로 바꾸기
@@ -34,5 +36,19 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
         Category category = categoryRepository.save(CategoryConverter.toCategory(request, member));
 
         return CategoryConverter.toCreateDTO(category);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long categoryId, Long memberId) {
+        // TODO: Member 에러 코드로 바꾸기
+        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.NOT_FOUND));
+
+        Category category = categoryRepository.findByIdAndMember(categoryId, member)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.NOT_FOUND));
+
+        categoryRepository.delete(category);
     }
 }

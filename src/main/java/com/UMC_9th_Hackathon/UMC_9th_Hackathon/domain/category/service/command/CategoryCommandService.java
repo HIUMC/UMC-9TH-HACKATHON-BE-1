@@ -5,4 +5,6 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.category.dto.res.CategoryR
 
 public interface CategoryCommandService {
     CategoryResDTO.CreateDTO createCategory(CategoryReqDTO.CreateDTO request, Long memberId);
+
+    void deleteCategory(Long categoryId, Long memberId);
 }
