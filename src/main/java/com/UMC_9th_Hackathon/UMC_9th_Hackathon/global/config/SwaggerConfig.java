@@ -16,16 +16,15 @@ public class SwaggerConfig {
     public OpenAPI swagger() {
         Info info = new Info().title("Project").description("Project Swagger").version("0.0.1");
 
-        // JWT 토큰 헤더 방식
-        String securityScheme = "JWT TOKEN";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityScheme);
+        // 세션 쿠키 방식
+        String cookieAuth = "Session Cookie";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(cookieAuth);
 
         Components components = new Components()
-                .addSecuritySchemes(securityScheme, new SecurityScheme()
-                        .name(securityScheme)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("Bearer")
-                        .bearerFormat("JWT")
+                .addSecuritySchemes(cookieAuth, new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.COOKIE)
+                        .name("JSESSIONID")  // 세션 쿠키 이름
                 );
 
         return new OpenAPI()
