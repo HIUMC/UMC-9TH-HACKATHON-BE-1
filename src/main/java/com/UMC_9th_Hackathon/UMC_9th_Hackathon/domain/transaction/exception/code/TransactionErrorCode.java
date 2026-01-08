@@ -12,6 +12,7 @@ public enum TransactionErrorCode implements BaseErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "TRANSACTION404_1", "해당 카테고리를 찾을 수 없습니다."),
     TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "TRANSACTION404_2", "해당 내역을 찾을 수 없습니다."),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "TRANSACTION500_1", "예기치 않은 서버 에러가 발생했습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "TRANSACTION404_3", "해당 카테고리를 찾을 수 없습니다."),
     ;
 
 
