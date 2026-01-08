@@ -29,7 +29,7 @@ public class TransactionController {
     @Operation(summary = "수입/지출 내역 추가 API", description = "새로운 내역을 저장합니다.")
     public ApiResponse<Long> createTransaction(
             @RequestBody @Valid TransactionReqDTO.TransactionCreateRequest request,
-            @SessionAttribute(name = "MEMBER_ID") Long memberId)
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId)
     {
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, transactionService.saveTransaction(request, memberId));
     }
@@ -49,14 +49,14 @@ public class TransactionController {
     @DeleteMapping("/{transactionId}")
     @Operation(summary = "수입/지출 내역 단건 삭제 API", description = "특정 내역 1개를 삭제합니다.")
     public ApiResponse<Void> deleteTranscation(@PathVariable Long transactionId,
-                                               @SessionAttribute(name = "MEMBER_ID") Long memberId) {
+                                               @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId) {
         transactionService.deleteTransaction(transactionId, memberId);
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, null);
     }
 
     @DeleteMapping
     @Operation(summary = "전체 내역 삭제 API")
-    public ApiResponse<Void> deleteAllTransactions(@SessionAttribute(name = "MEMBER_ID") Long memberId) {
+    public ApiResponse<Void> deleteAllTransactions(@Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId) {
         transactionService.deleteAllTransactions(memberId);
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, null);
     }
@@ -65,7 +65,7 @@ public class TransactionController {
     @Operation(summary = "날짜별 조회 API")
     public ApiResponse<TransactionResDTO.DailyTransactionResponse> getDailyTransactions(
             @RequestParam(name = "date") LocalDate date,
-            @SessionAttribute(name = "MEMBER_ID") Long memberId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId) {
 
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, transactionService.getDailyTransactions(date, memberId));
     }
@@ -75,7 +75,7 @@ public class TransactionController {
     public ApiResponse<TransactionResDTO.MonthlySummaryResponse> getMonthlySummary(
             @RequestParam(name = "year") int year,
             @RequestParam(name = "month") int month,
-            @SessionAttribute(name = "MEMBER_ID") Long memberId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId) {
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, transactionService.getMonthlySummary(year, month, memberId));
     }
 }
