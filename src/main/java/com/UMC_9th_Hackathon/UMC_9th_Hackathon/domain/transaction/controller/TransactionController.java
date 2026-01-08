@@ -1,5 +1,6 @@
 package com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.controller;
 
+import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.StatisticsResDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.TransactionReqDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.dto.TransactionResDTO;
 import com.UMC_9th_Hackathon.UMC_9th_Hackathon.domain.transaction.exception.code.TransactionSuccessCode;
@@ -8,6 +9,7 @@ import com.UMC_9th_Hackathon.UMC_9th_Hackathon.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -77,5 +79,16 @@ public class TransactionController {
             @RequestParam(name = "month") int month,
             @Parameter(hidden = true) @SessionAttribute(name = "MEMBER_ID") Long memberId) {
         return ApiResponse.onSuccess(TransactionSuccessCode.OK, transactionService.getMonthlySummary(year, month, memberId));
+    }
+
+    @GetMapping("/statics")
+    public ApiResponse<StatisticsResDTO.MonthlyStats> getStatics(
+            @RequestParam String month,
+            HttpSession session
+    ) {
+        Long memberId = (Long) session.getAttribute("MEMBER_ID");
+        if (memberId == null) throw new RuntimeException("로그인이 필요합니다.");
+
+        return ApiResponse.onSuccess(TransactionSuccessCode.OK, transactionService.getMonthlyStatistics(memberId, month));
     }
 }
